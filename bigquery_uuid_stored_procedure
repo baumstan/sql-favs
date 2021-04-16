@@ -1,0 +1,28 @@
+# Unique Id based on some conditions in a stored condition 
+# and called in other queries
+# For use in BQ
+
+# Stored Procedure
+
+BEGIN
+  SELECT
+    DISTINCT uuid
+  FROM table_name
+  WHERE foo = declared_date_variable
+  ;
+END
+
+
+# Call and use Stored Procedure in Separate Query
+
+DECLARE declared_date_variable DATE DEFAULT DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY);
+DECLARE uuid ARRAY<STRING>;
+
+CALL `project.table`(declared_date_variable, uuid);
+
+BEGIN
+  CREATE TEMP TABLE bar AS
+  SELECT uuid;
+END;
+
+SELECT * FROM bar;
