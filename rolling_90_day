@@ -1,0 +1,18 @@
+# In bigquery create a rolling 90 day total bottles sold
+WITH TOTAL_BY_DAY AS (
+    SELECT 
+        date, 
+        SUM(bottles_sold) as total_bottles_sold
+    FROM `bigquery-public-data.iowa_liquor_sales.sales`
+    GROUP BY date
+)
+
+SELECT 
+    b.date, 
+    SUM(b.total_bottles_sold)
+FROM TOTAL_BY_DAY a
+CROSS JOIN TOTAL_BY_DAY b
+WHERE a.date BETWEEN DATE_SUB(b.date, INTERVAL 90 DAY) AND b.date
+GROUP BY b.date
+ORDER BY b.date DESC
+;
